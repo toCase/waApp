@@ -72,7 +72,17 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                 console.error(e.stack);
             }
         }
+        
     </script>
+    <script>
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) {
+        const initData = Telegram.WebApp.initData;
+        // Показываем initData как alert
+        alert(initData);
+      } else {
+        alert("No initData available");
+      }
+    </script> 
     <script src="appwaApp.js"></script>
     <script type="text/javascript" src="qtloader.js"></script>
   </body>
