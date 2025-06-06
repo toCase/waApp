@@ -20,7 +20,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
       html, body { padding: 0; margin: 0; overflow: hidden; height: 100% }
       #screen { width: 100%; height: 100%; }
     </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
   </head>
   <body onload="init()">
     <figure style="overflow:visible;" id="qtspinner">
@@ -53,7 +53,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
                 const instance = await qtLoad({
                     qt: {
-                        onLoaded: () => showUi(screen),
+                        onLoaded: () => 
+                        {
+                          showUi(screen);                          
+                          new QWebChannel(qt.webChannelTransport, function (channel) {
+                              const bridge = channel.objects.bridge;
+                              const initData = Telegram?.WebApp?.initData || "no_data_available";
+                              bridge.setInitData(initData);
+                              console.log("InitData sent to Qt:", initData);
+                          });
+                        },
                         onExit: exitData =>
                         {
                             status.innerHTML = 'Application exit';
@@ -64,8 +73,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                             showUi(spinner);
                         },
                         entryFunction: window.appwaApp_entry,
-                        containerElements: [screen],
-                        
+                        containerElements: [screen],                        
                     }
                 });
             } catch (e) {
@@ -77,12 +85,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
     </script>
     <script>
       function checkTelegramInitData() {
-        const tg = window.Telegram && Telegram.WebApp;
-        if (tg && tg.initData && tg.initData.length > 0) {
-          alert("initData: " + tg.initData);
-        } else {
-          alert("No initData available (checked later)");
-        }
+        
+
+        
       }
 
       window.addEventListener("DOMContentLoaded", () => {
