@@ -57,11 +57,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                         {
                           showUi(screen); 
                           if (window.Telegram && window.Telegram.WebApp) {
-                            const initData = window.Telegram.WebApp.initData;
-                            // Передать initData в Qt WASM:
-                            Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
-                            alert(initData)
-                          }                         
+                              Telegram.WebApp.onEvent('ready', function () {
+                                  const initData = Telegram.WebApp.initData || '';
+                                  Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
+                                  alert("InitData: " + initData);
+                              });
+                          } else {
+                              alert("Telegram WebApp not available");
+                          }                       
                           
                         },
                         onExit: exitData =>
