@@ -57,12 +57,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                         {
                           showUi(screen); 
                                              
-                          if (window.Telegram && window.Telegram.WebApp) {
-                              const initData = window.Telegram.WebApp.initData;
-                              alert("initData: " + initData);
-                            } else {
-                              alert("Telegram WebApp not available");
-                            }
+                          
                         },
                         onExit: exitData =>
                         {
@@ -86,6 +81,13 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
     </script>
     <script>
       function checkTelegramInitData() {
+
+        if (window.Telegram && window.Telegram.WebApp) {
+                              const initData = window.Telegram.WebApp.initData;
+                              alert("initData: " + initData);
+                            } else {
+                              alert("Telegram WebApp not available");
+                            }
         
 
         
