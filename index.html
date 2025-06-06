@@ -53,38 +53,28 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
                 const instance = await qtLoad({
                     qt: {
-                        onLoaded: () => 
-                        {
-                          showUi(screen); 
+                onLoaded: () => {
+                    showUi(screen);
 
-                          setTimeout(() => {
-                              if (window.Telegram && window.Telegram.WebApp) {
-                                  const initData = window.Telegram.WebApp.initData;
-                                  alert("initData: " + initData);
-                                  if (typeof Module !== 'undefined') {
-                                      Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
-                                  } else {
-                                      alert("Module not ready");
-                                  }
-                              } else {
-                                  alert("Telegram WebApp not available");
-                              }
-                          }, 500); // Даём Telegram время и убеждаемся, что Module уже готов
-                                             
-                          
-                        },
-                        onExit: exitData =>
-                        {
-                            status.innerHTML = 'Application exit';
-                            status.innerHTML +=
-                                exitData.code !== undefined ? ` with code ${exitData.code}` : '';
-                            status.innerHTML +=
-                                exitData.text !== undefined ? ` (${exitData.text})` : '';
-                            showUi(spinner);
-                        },
-                        entryFunction: window.appwaApp_entry,
-                        containerElements: [screen],                        
+                    // Ждём, когда Module полностью инициализируется:
+                    if (typeof Module !== 'undefined') {
+                        Module.onRuntimeInitialized = () => {
+                            if (window.Telegram && window.Telegram.WebApp) {
+                                const initData = window.Telegram.WebApp.initData;
+                                alert("initData: " + initData);
+                                Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
+                            } else {
+                                alert("Telegram WebApp not available");
+                            }
+                        };
+                    } else {
+                        alert("Module undefined at onLoaded");
                     }
+                },
+                onExit: exitData => { /* ... */ },
+                entryFunction: window.appwaApp_entry,
+                containerElements: [screen],
+            }
                 });
             } catch (e) {
                 console.error(e);
@@ -94,7 +84,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
         
     </script>
     <script>
-      function checkTelegramInitData() {
+      <!-- function checkTelegramInitData() {
 
         if (window.Telegram && window.Telegram.WebApp) {
                               const initData = window.Telegram.WebApp.initData;
@@ -111,7 +101,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
       window.addEventListener("DOMContentLoaded", () => {
         // Telegram WebApp инициализируется с задержкой, подождём чуть-чуть
         setTimeout(checkTelegramInitData, 500);
-      });
+      }); -->
     </script>
 
     <script src="appwaApp.js"></script>
