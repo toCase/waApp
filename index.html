@@ -56,12 +56,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                         onLoaded: () => 
                         {
                           showUi(screen);                          
-                          new QWebChannel(qt.webChannelTransport, function (channel) {
-                              const bridge = channel.objects.bridge;
-                              const initData = Telegram?.WebApp?.initData || "no_data_available";
-                              bridge.setInitData(initData);
-                              console.log("InitData sent to Qt:", initData);
-                          });
+                          
                         },
                         onExit: exitData =>
                         {
