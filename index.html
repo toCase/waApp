@@ -34,53 +34,66 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
     <div id="screen"></div>
 
     <script type="text/javascript">
-        async function init()
-        {
-            const spinner = document.querySelector('#qtspinner');
-            const screen = document.querySelector('#screen');
-            const status = document.querySelector('#qtstatus');
+       async function init() {
+    const spinner = document.querySelector('#qtspinner');
+    const screen = document.querySelector('#screen');
+    const status = document.querySelector('#qtstatus');
 
-            const showUi = (ui) => {
-                [spinner, screen].forEach(element => element.style.display = 'none');
-                if (screen === ui)
-                    screen.style.position = 'default';
-                ui.style.display = 'block';
-            }
+    const showUi = (ui) => {
+        [spinner, screen].forEach(el => el.style.display = 'none');
+        if (screen === ui)
+            screen.style.position = 'default';
+        ui.style.display = 'block';
+    };
 
-            try {
-                showUi(spinner);
-                status.innerHTML = 'Loading...';
+    try {
+        showUi(spinner);
+        status.innerHTML = 'Loading...';
 
-                const instance = await qtLoad({
-                    qt: {
+        const instance = await qtLoad({
+            qt: {
                 onLoaded: () => {
                     showUi(screen);
-
-                    // Ждём, когда Module полностью инициализируется:
-                    if (typeof Module !== 'undefined') {
-                        Module.onRuntimeInitialized = () => {
-                            if (window.Telegram && window.Telegram.WebApp) {
-                                const initData = window.Telegram.WebApp.initData;
-                                alert("initData: " + initData);
-                                Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
-                            } else {
-                                alert("Telegram WebApp not available");
-                            }
-                        };
-                    } else {
-                        alert("Module undefined at onLoaded");
-                    }
                 },
-                onExit: exitData => { /* ... */ },
                 entryFunction: window.appwaApp_entry,
                 containerElements: [screen],
             }
-                });
-            } catch (e) {
-                console.error(e);
-                console.error(e.stack);
+        });
+
+        // Ждём готовности Module:
+        await new Promise(resolve => {
+            if (typeof Module !== 'undefined' && Module.calledRun) {
+                resolve();
+            } else if (typeof Module !== 'undefined') {
+                Module.onRuntimeInitialized = () => resolve();
+            } else {
+                // Если Module ещё не определён, ждём его появления
+                const checkModule = () => {
+                    if (typeof Module !== 'undefined' && Module.calledRun) {
+                        resolve();
+                    } else {
+                        setTimeout(checkModule, 50);
+                    }
+                };
+                checkModule();
             }
+        });
+
+        // Теперь Module должен быть готов:
+        if (window.Telegram && window.Telegram.WebApp) {
+            const initData = window.Telegram.WebApp.initData || '';
+            alert("initData: " + initData);
+            Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
+        } else {
+            alert("Telegram WebApp not available");
         }
+
+    } catch (e) {
+        console.error(e);
+        console.error(e.stack);
+    }
+}
+
         
     </script>
     <script>
