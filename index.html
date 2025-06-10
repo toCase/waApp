@@ -34,19 +34,20 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
     <div id="screen"></div>
 
     <script type="text/javascript">
-       async function init() {
-    const spinner = document.querySelector('#qtspinner');
-    const screen = document.querySelector('#screen');
-    const status = document.querySelector('#qtstatus');
+        async function init()
+        {
+            const spinner = document.querySelector('#qtspinner');
+            const screen = document.querySelector('#screen');
+            const status = document.querySelector('#qtstatus');
 
-    const showUi = (ui) => {
-        [spinner, screen].forEach(el => el.style.display = 'none');
-        if (screen === ui)
-            screen.style.position = 'default';
-        ui.style.display = 'block';
-    };
+            const showUi = (ui) => {
+                [spinner, screen].forEach(element => element.style.display = 'none');
+                if (screen === ui)
+                    screen.style.position = 'default';
+                ui.style.display = 'block';
+            }
 
-    try {
+            try {
                 showUi(spinner);
                 status.innerHTML = 'Loading...';
 
@@ -71,31 +72,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
                 console.error(e);
                 console.error(e.stack);
             }
-      }
-
-        
+        }
     </script>
-    <script>
-      <!-- function checkTelegramInitData() {
-
-        if (window.Telegram && window.Telegram.WebApp) {
-                              const initData = window.Telegram.WebApp.initData;
-                              Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
-                              alert("initData: " + initData);
-                            } else {
-                              alert("Telegram WebApp not available");
-                            }
-        
-
-        
-      }
-
-      window.addEventListener("DOMContentLoaded", () => {
-        // Telegram WebApp инициализируется с задержкой, подождём чуть-чуть
-        setTimeout(checkTelegramInitData, 500);
-      }); -->
-    </script>
-
     <script src="appwaApp.js"></script>
     <script type="text/javascript" src="qtloader.js"></script>
   </body>
