@@ -47,52 +47,31 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
     };
 
     try {
-        showUi(spinner);
-        status.innerHTML = 'Loading...';
+                showUi(spinner);
+                status.innerHTML = 'Loading...';
 
-        const instance = await qtLoad({
-            qt: {
-                onLoaded: () => {
-                    showUi(screen);
-                },
-                entryFunction: window.appwaApp_entry,
-                containerElements: [screen],
-            }
-        });
-
-        // Ждём готовности Module:
-        await new Promise(resolve => {
-            if (typeof Module !== 'undefined' && Module.calledRun) {
-                resolve();
-            } else if (typeof Module !== 'undefined') {
-                Module.onRuntimeInitialized = () => resolve();
-            } else {
-                // Если Module ещё не определён, ждём его появления
-                const checkModule = () => {
-                    if (typeof Module !== 'undefined' && Module.calledRun) {
-                        resolve();
-                    } else {
-                        setTimeout(checkModule, 50);
+                const instance = await qtLoad({
+                    qt: {
+                        onLoaded: () => showUi(screen),
+                        onExit: exitData =>
+                        {
+                            status.innerHTML = 'Application exit';
+                            status.innerHTML +=
+                                exitData.code !== undefined ? ` with code ${exitData.code}` : '';
+                            status.innerHTML +=
+                                exitData.text !== undefined ? ` (${exitData.text})` : '';
+                            showUi(spinner);
+                        },
+                        entryFunction: window.appwaApp_entry,
+                        containerElements: [screen],
+                        
                     }
-                };
-                checkModule();
+                });
+            } catch (e) {
+                console.error(e);
+                console.error(e.stack);
             }
-        });
-
-        // Теперь Module должен быть готов:
-        if (window.Telegram && window.Telegram.WebApp) {
-            const initData = window.Telegram.WebApp.initData || '';
-            alert("initData: " + initData);
-            Module.ccall('setInitDataFromJS', null, ['string'], [initData]);
-        } else {
-            alert("Telegram WebApp not available");
-        }
-
-    } catch (e) {
-        console.error(e);
-        console.error(e.stack);
-    }
-}
+      }
 
         
     </script>
